@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Location Tracker</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #101820;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+        color: #00eaff;
+    }
+
+    #map {
+        width: 100%;
+        height: 400px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 12px 20px;
+        background: #00eaff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: black;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+</style>
+
+<!-- LEAFLET MAP LIBRARY -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</head>
+<body>
+
+<h1>📍 Location Tracker</h1>
+<p>Click the button below to get your live location.</p>
+
+<button onclick="getLocation()">Get My Location</button>
+
+<div id="map"></div>
+
+<script>
+let map;
+let marker;
+
+// Function to get user location
+function getLocation() {
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(showPosition, showError);
+}
+
+// Show position on map
+function showPosition(position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    // Create map if not exists
+    if (!map) {
+        map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+    }
+
+    // If marker exists, move it
+    if (marker) {
+        marker.setLatLng([lat, lng]);
+    } else {
+        marker = L.marker([lat, lng]).addTo(map)
+                 .bindPopup("You are here!").openPopup();
+    }
+}
+
+// Error handling
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("You denied location permission.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("Request timed out.");
+            break;
+        default:
+            alert("An unknown error occurred.");
+    }
+}
+</script>
+
+</body>
+  </html>
